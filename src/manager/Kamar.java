@@ -4,6 +4,14 @@
  */
 package manager;
 
+import config.DatabaseConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Ilham Sholahuddin
@@ -15,7 +23,55 @@ public class Kamar extends javax.swing.JFrame {
      */
     public Kamar() {
         initComponents();
+        tampilkanDataKamar();
+        
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+        int row = jTable1.getSelectedRow(); // baris yang diklik
+        if (row != -1) {
+            String nomor_kamar = jTable1.getValueAt(row, 0).toString();
+            jTextField1.setText(nomor_kamar);
+            String tipe = jTable1.getValueAt(row, 1).toString();
+            jComboBox1.setSelectedItem(tipe);
+            String harga_kamar = jTable1.getValueAt(row, 2).toString();
+            jTextField2.setText(harga_kamar);
+            String status = jTable1.getValueAt(row, 3).toString();
+            jComboBox2.setSelectedItem(status);
+        }
+        jButton1.setEnabled(false);
+        jTextField1.setEditable(false);
     }
+});
+    }
+    
+private void tampilkanDataKamar() {
+    try {
+        Connection conn = DatabaseConnection.connect();
+        String sql = "SELECT nomor_kamar, tipe, harga_kamar, status FROM kamar";
+
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("No Kamar");
+        model.addColumn("Tipe");
+        model.addColumn("Harga Kamar");
+        model.addColumn("Status");
+
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getString("nomor_kamar"),
+                rs.getString("tipe"),
+                rs.getString("harga_kamar"),
+                rs.getString("status")
+            });
+        }
+
+        jTable1.setModel(model);
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -41,6 +97,7 @@ public class Kamar extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -95,15 +152,38 @@ public class Kamar extends javax.swing.JFrame {
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Standard", "Deluxe", "Suite" }));
 
+        jLabel7.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel7.setText("Rp");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tersedia", "Terisi", "Cleaning", "Dalam Perbaikan", "Reserved" }));
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tersedia", "Ditempati", "Maintenance", "Reserved" }));
 
         jButton1.setText("Simpan");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Edit");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Hapus");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        jButton5.setText("Reset");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -118,17 +198,18 @@ public class Kamar extends javax.swing.JFrame {
                     .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jComboBox2, javax.swing.GroupLayout.Alignment.LEADING, 0, 273, Short.MAX_VALUE)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                    .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jComboBox2, 0, 273, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
                             .addComponent(jLabel7)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jTextField2))
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.LEADING)))
+                        .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jTextField1)))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -155,6 +236,8 @@ public class Kamar extends javax.swing.JFrame {
                         .addComponent(jTextField2)))
                 .addGap(18, 18, 18)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -239,6 +322,133 @@ public class Kamar extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String nomorkamar = jTextField1.getText().trim();
+        String tipe = (String) jComboBox1.getSelectedItem();
+        String harga = jTextField2.getText().trim();
+        String status = (String) jComboBox2.getSelectedItem();
+        
+        if (nomorkamar.isEmpty() || tipe.isEmpty() || harga.isEmpty() || jComboBox2.getSelectedIndex() == -1 || jComboBox1.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this, "Semua field wajib diisi!");
+            return;
+        }
+
+        try (Connection conn = DatabaseConnection.connect()) {
+            String sql = "INSERT INTO kamar (nomor_kamar, tipe, harga_kamar, status) VALUES (?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, nomorkamar);
+            stmt.setString(2, tipe);
+            stmt.setString(3, harga);
+            stmt.setString(4, status);
+            stmt.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "Data Barang berhasil disimpan.");
+            jTextField1.setText("");
+            jTextField2.setText("");
+            jComboBox1.setSelectedIndex(-1);
+            jComboBox2.setSelectedIndex(-1);
+            tampilkanDataKamar();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal menyimpan: " + e.getMessage());
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        jTextField1.setText("");
+        jTextField1.setEnabled(true);
+        jButton1.setEnabled(true);
+        jTextField2.setText("");
+        jComboBox1.setSelectedIndex(-1);
+        jComboBox2.setSelectedIndex(-1);
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        String nomorkamar = jTextField1.getText().trim();
+        String tipe = (String) jComboBox1.getSelectedItem();
+        String harga = jTextField2.getText().trim();
+        String status = (String) jComboBox2.getSelectedItem();
+        
+        if (nomorkamar.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tidak ada data yang dipilih untuk diubah!");
+            return; 
+        }
+        
+         if (tipe.isEmpty() || harga.isEmpty() || status.isEmpty() || jComboBox1.getSelectedIndex() == -1 || jComboBox2.getSelectedIndex() == -1) {
+         JOptionPane.showMessageDialog(this, "Semua field wajib diisi!");
+         return;
+        }
+         
+        try (Connection conn = DatabaseConnection.connect()) {
+        String sql = "UPDATE kamar SET tipe = ?, harga_kamar = ?, status = ? WHERE nomor_kamar = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, tipe);
+        stmt.setString(2, harga);
+        stmt.setString(3, status);
+        stmt.setString(4, nomorkamar);
+
+        int updated = stmt.executeUpdate();
+        if (updated > 0) {
+        JOptionPane.showMessageDialog(this, "Data Barang berhasil diperbarui.");
+
+        // Reset form
+        jTextField1.setText("");
+        jTextField1.setEditable(true);
+        jButton1.setEnabled(true);
+        jTextField2.setText("");
+        jComboBox1.setSelectedIndex(-1);
+        jComboBox2.setSelectedIndex(-1);
+
+        // Refresh tabel
+        tampilkanDataKamar();
+
+        } else {
+        JOptionPane.showMessageDialog(this, "Data tidak ditemukan atau tidak ada perubahan.");
+        }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal memperbarui: " + e.getMessage());
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih baris yang ingin dihapus.");
+        return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+        "Yakin ingin menghapus kamar ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            String nomorkamar = (String) jTable1.getValueAt(selectedRow, 0);
+
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement("DELETE FROM kamar WHERE nomor_kamar = ?")) {
+
+            stmt.setString(1, nomorkamar);
+            stmt.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "User berhasil dihapus.");
+            tampilkanDataKamar();
+            
+        jTextField1.setText("");
+        jTextField1.setEditable(true);
+        jButton1.setEnabled(true);
+        jTextField2.setText("");
+        jComboBox1.setSelectedIndex(-1);
+        jComboBox2.setSelectedIndex(-1);
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Gagal menghapus user: " + ex.getMessage());
+            ex.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -279,6 +489,7 @@ public class Kamar extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;

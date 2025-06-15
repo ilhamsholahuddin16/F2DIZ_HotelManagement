@@ -4,6 +4,16 @@
  */
 package login;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+import config.DatabaseConnection;
+import config.HashUtil;
+import manager.*;
+import receptionist.*;
+import housekeeper.*;
+
 /**
  *
  * @author Ilham Sholahuddin
@@ -63,6 +73,11 @@ public class login_page extends javax.swing.JFrame {
         });
 
         jButton1.setText("Login");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -70,22 +85,18 @@ public class login_page extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jTextField1)
+                    .addComponent(jPasswordField1)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField1)
-                            .addComponent(jPasswordField1)
-                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))))
+                        .addComponent(jLabel2)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel2)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -100,7 +111,7 @@ public class login_page extends javax.swing.JFrame {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(40, 40, 40)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -176,6 +187,64 @@ public class login_page extends javax.swing.JFrame {
     private void jPasswordField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jPasswordField1ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String username = jTextField1.getText().trim();
+        String inputPassword = new String(jPasswordField1.getPassword()).trim();
+
+        // Validasi input kosong
+        if (username.isEmpty() || inputPassword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Username dan Password harus diisi.");
+            return;
+        }
+        
+        // Validasi panjang password
+        if (inputPassword.length() < 6) {
+            JOptionPane.showMessageDialog(this, "Password minimal 6 karakter.");
+            return;
+        }
+
+        try {
+            Connection conn = DatabaseConnection.connect();
+
+            String sql = "SELECT password, akses FROM usersistem WHERE username = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            String dbHashedPassword = rs.getString("password");
+            String role = rs.getString("akses");
+            String inputHashed = HashUtil.hashPassword(inputPassword);
+
+        if (dbHashedPassword.equals(inputHashed)) {
+            JOptionPane.showMessageDialog(this, "Login berhasil sebagai " + role);
+
+            if ("Manager".equalsIgnoreCase(role)) {
+                new Dashboard().setVisible(true);
+            } else if ("Receptionist".equalsIgnoreCase(role)) {
+                new Dashboard_Receptionist().setVisible(true);
+            } else if ("Housekeeper".equalsIgnoreCase(role)) {
+                new Dashboard_Housekeeper().setVisible(true);
+            
+            } else {
+                JOptionPane.showMessageDialog(this, "Peran tidak dikenali: " + role);
+            }
+
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Password salah!");
+        }
+        } else {
+            JOptionPane.showMessageDialog(this, "Username tidak ditemukan!");
+        }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments

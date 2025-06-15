@@ -96,7 +96,7 @@
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
             <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="DASHBOARD HOUSEKEEPING"/>
+            <Property name="text" type="java.lang.String" value="DASHBOARD HOUSEKEEPER"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -121,13 +121,11 @@
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                       <Component id="jButton2" pref="273" max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="jButton1" max="32767" attributes="0"/>
-                          <Component id="jComboBox1" alignment="0" pref="273" max="32767" attributes="0"/>
-                          <Component id="jTextField1" alignment="0" max="32767" attributes="0"/>
-                          <Component id="jComboBox2" pref="273" max="32767" attributes="0"/>
-                          <Component id="jButton3" alignment="0" max="32767" attributes="0"/>
-                      </Group>
+                      <Component id="jButton1" max="32767" attributes="0"/>
+                      <Component id="jComboBox1" alignment="0" pref="273" max="32767" attributes="0"/>
+                      <Component id="jTextField1" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jComboBox2" pref="273" max="32767" attributes="0"/>
+                      <Component id="jButton3" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace pref="17" max="32767" attributes="0"/>
               </Group>
@@ -215,12 +213,11 @@
         <Component class="javax.swing.JComboBox" name="jComboBox2">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="5">
+              <StringArray count="4">
                 <StringItem index="0" value="Tersedia"/>
-                <StringItem index="1" value="Terisi"/>
-                <StringItem index="2" value="Cleaning"/>
-                <StringItem index="3" value="Dalam Perbaikan"/>
-                <StringItem index="4" value="Reserved"/>
+                <StringItem index="1" value="Ditempati"/>
+                <StringItem index="2" value="Maintenance"/>
+                <StringItem index="3" value="Reserved"/>
               </StringArray>
             </Property>
           </Properties>

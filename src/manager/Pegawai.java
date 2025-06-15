@@ -4,6 +4,14 @@
  */
 package manager;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import config.DatabaseConnection;
+import java.sql.SQLException;
+
 /**
  *
  * @author Ilham Sholahuddin
@@ -15,7 +23,72 @@ public class Pegawai extends javax.swing.JFrame {
      */
     public Pegawai() {
         initComponents();
+        tampilkanDataPegawai();
+        
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+        int row = jTable1.getSelectedRow(); // baris yang diklik
+        if (row != -1) {
+            String id_pegawai = jTable1.getValueAt(row, 0).toString();
+            jTextField1.setText(id_pegawai);
+            String namaPegawai = jTable1.getValueAt(row, 1).toString();
+            jTextField2.setText(namaPegawai);
+            String nik = jTable1.getValueAt(row, 2).toString();
+            jTextField3.setText(nik);
+            String jenisKelamin = jTable1.getValueAt(row, 3).toString();
+            jComboBox1.setSelectedItem(jenisKelamin);
+            String alamat = jTable1.getValueAt(row, 4).toString();
+            jTextArea1.setText(alamat);
+            String no_tlp = jTable1.getValueAt(row, 5).toString();
+            jTextField4.setText(no_tlp);
+            String email = jTable1.getValueAt(row, 6).toString();
+            jTextField5.setText(email);
+            String jabatan = jTable1.getValueAt(row, 7).toString();
+            jComboBox2.setSelectedItem(jabatan);
+            String aksessistem = jTable1.getValueAt(row, 8).toString();
+            jComboBox3.setSelectedItem(aksessistem);
+        }
+        jTextField1.setEditable(false);
+        jButton1.setEnabled(false);
     }
+});
+    }
+    
+private void tampilkanDataPegawai() {
+    try {
+        Connection conn = DatabaseConnection.connect();
+        String sql = "SELECT id_pegawai, nama_pegawai, nik, jenis_kelamin, alamat, no_tlp, email, jabatan, akses_sistem FROM pegawai";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("ID Pegawai");
+        model.addColumn("Nama Pegawai");
+        model.addColumn("NIK");
+        model.addColumn("Jenis Kelamin");
+        model.addColumn("Alamat");
+        model.addColumn("No HP");
+        model.addColumn("Email");
+        model.addColumn("Jabatan");
+        model.addColumn("Akses Sistem");
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getString("id_pegawai"),
+                rs.getString("nama_pegawai"),
+                rs.getString("nik"),
+                rs.getString("jenis_kelamin"),
+                rs.getString("alamat"),
+                rs.getString("no_tlp"),
+                rs.getString("email"),
+                rs.getString("jabatan"),
+                rs.getString("akses_sistem")
+                });
+        }
+        jTable1.setModel(model);
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+    }
+}
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -58,6 +131,7 @@ public class Pegawai extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox<>();
         jComboBox2 = new javax.swing.JComboBox<>();
         jComboBox3 = new javax.swing.JComboBox<>();
+        jButton6 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setSize(new java.awt.Dimension(860, 580));
@@ -143,7 +217,7 @@ public class Pegawai extends javax.swing.JFrame {
                     .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton4))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton5)
                 .addGap(16, 16, 16))
@@ -192,17 +266,42 @@ public class Pegawai extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jTextArea1);
 
         jButton1.setText("Simpan");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Edit");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Hapus");
         jButton3.setPreferredSize(new java.awt.Dimension(72, 28));
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Laki-Laki", "Perempuan" }));
+        jComboBox1.setSelectedIndex(-1);
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Manajer", "Resepsionis", "HouseKeeper" }));
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Manager", "Receptionist", "HouseKeeper" }));
+        jComboBox2.setSelectedIndex(-1);
 
         jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ya", "Tidak" }));
+        jComboBox3.setSelectedIndex(-1);
+
+        jButton6.setText("Reset");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -222,6 +321,7 @@ public class Pegawai extends javax.swing.JFrame {
                     .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jTextField2)
                     .addComponent(jTextField3)
@@ -276,10 +376,12 @@ public class Pegawai extends javax.swing.JFrame {
                     .addComponent(jLabel10)
                     .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -315,6 +417,171 @@ public class Pegawai extends javax.swing.JFrame {
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String idPegawai = jTextField1.getText().trim();
+        String namaPegawai = jTextField2.getText().trim();
+        String nik = jTextField3.getText().trim();
+        String jeniskelamin = (String) jComboBox1.getSelectedItem();
+        String alamat= jTextArea1.getText().trim();
+        String no_tlp= jTextField4.getText().trim();
+        String email= jTextField5.getText().trim();
+        String jabatan = (String) jComboBox2.getSelectedItem();
+        String aksessistem = (String) jComboBox3.getSelectedItem();
+
+        if (idPegawai.isEmpty() || namaPegawai.isEmpty() || nik.isEmpty() || alamat.isEmpty() || no_tlp.isEmpty() || email.isEmpty() || jComboBox1.getSelectedIndex() == -1 || jComboBox2.getSelectedIndex() == -1 || jComboBox3.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this, "Semua field wajib diisi!");
+            return;
+        }
+
+        try (Connection conn = DatabaseConnection.connect()) {
+            String sql = "INSERT INTO pegawai (id_pegawai, nama_pegawai, nik, jenis_kelamin, alamat, no_tlp, email, jabatan, akses_sistem) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, idPegawai);
+            stmt.setString(2, namaPegawai);
+            stmt.setString(3, nik);
+            stmt.setString(4, jeniskelamin);
+            stmt.setString(5, alamat);
+            stmt.setString(6, no_tlp);
+            stmt.setString(7, email);
+            stmt.setString(8, jabatan);
+            stmt.setString(9, aksessistem);
+            stmt.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "Data pegawai berhasil disimpan.");
+            jTextField1.setText("");
+            jTextField2.setText("");
+            jTextField3.setText(" ");
+            jTextArea1.setText(" ");
+            jTextField4.setText(" ");
+            jTextField5.setText(" ");
+            jComboBox1.setSelectedIndex(-1);
+            jComboBox2.setSelectedIndex(-1);
+            jComboBox3.setSelectedIndex(-1);
+            tampilkanDataPegawai();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal menyimpan: " + e.getMessage());
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih baris yang ingin dihapus.");
+        return;
+        }
+        
+        int confirm = JOptionPane.showConfirmDialog(this,
+        "Yakin ingin menghapus pegawai ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            
+        int idPegawai = (int) jTable1.getValueAt(selectedRow, 0);
+
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement("DELETE FROM pegawai WHERE id_pegawai = ?")) {
+
+            stmt.setInt(1, idPegawai);
+            stmt.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "Pegawai berhasil dihapus.");
+            tampilkanDataPegawai();
+            
+        jTextField1.setText("");
+        jTextField1.setEditable(true);
+        jButton1.setEnabled(true);
+        jTextField2.setText("");
+        jTextField3.setText("");
+        jTextArea1.setText("");
+        jTextField4.setText("");
+        jTextField5.setText("");
+        jComboBox1.setSelectedIndex(-1);
+        jComboBox2.setSelectedIndex(-1);
+        jComboBox3.setSelectedIndex(-1);
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Gagal menghapus Pegawai: " + ex.getMessage());
+            ex.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        String idPegawai = jTextField1.getText().trim();
+        String namaPegawai = jTextField2.getText().trim();
+        String nik = jTextField3.getText().trim();
+        String jeniskelamin = (String) jComboBox1.getSelectedItem();
+        String alamat= jTextArea1.getText().trim();
+        String no_tlp= jTextField4.getText().trim();
+        String email= jTextField5.getText().trim();
+        String jabatan = (String) jComboBox2.getSelectedItem();
+        String aksessistem = (String) jComboBox3.getSelectedItem();
+        
+         if (idPegawai.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tidak ada data yang dipilih untuk diubah!");
+            return; 
+        }
+         if (namaPegawai.isEmpty() || nik.isEmpty() || alamat.isEmpty() || no_tlp.isEmpty() || email.isEmpty() || jComboBox2.getSelectedIndex() == -1 || jComboBox1.getSelectedIndex() == -1 || jComboBox3.getSelectedIndex() == -1) {
+         JOptionPane.showMessageDialog(this, "Semua field wajib diisi!");
+         return;
+        }
+        try (Connection conn = DatabaseConnection.connect()) {
+        String sql = "UPDATE pegawai SET nama_pegawai = ?, nik = ?, jenis_kelamin = ?, alamat = ?, no_tlp = ?, email = ?, jabatan = ? WHERE id_pegawai = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, namaPegawai);
+        stmt.setString(2, nik);
+        stmt.setString(3, jeniskelamin);
+        stmt.setString(4, alamat);
+        stmt.setString(5, no_tlp);
+        stmt.setString(6, email);
+        stmt.setString(7, jabatan);
+        stmt.setString(8, aksessistem);
+        stmt.setString(9, idPegawai); 
+
+        int updated = stmt.executeUpdate();
+        if (updated > 0) {
+        JOptionPane.showMessageDialog(this, "Data pegawai berhasil diperbarui.");
+
+        // Reset form
+        jTextField1.setText("");
+        jTextField1.setEditable(true);
+        jButton1.setEnabled(true);
+        jTextField2.setText("");
+        jTextField3.setText("");
+        jTextArea1.setText("");
+        jTextField4.setText("");
+        jTextField5.setText("");
+        jComboBox1.setSelectedIndex(-1);
+        jComboBox2.setSelectedIndex(-1);
+        jComboBox3.setSelectedIndex(-1);
+
+        tampilkanDataPegawai();
+        
+        } else {
+        JOptionPane.showMessageDialog(this, "Data tidak ditemukan atau tidak ada perubahan.");
+        }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal memperbarui: " + e.getMessage());
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // TODO add your handling code here:
+        jTextField1.setText("");
+        jTextField1.setEditable(true);
+        jButton1.setEnabled(true);
+        jTextField2.setText("");
+        jTextField3.setText("");
+        jTextArea1.setText("");
+        jTextField4.setText("");
+        jTextField5.setText("");
+        jComboBox1.setSelectedIndex(-1);
+        jComboBox2.setSelectedIndex(-1);
+        jComboBox3.setSelectedIndex(-1);
+    }//GEN-LAST:event_jButton6ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -357,6 +624,7 @@ public class Pegawai extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JComboBox<String> jComboBox3;

@@ -9,6 +9,7 @@ import java.security.MessageDigest;
  *
  * @author Ilham Sholahuddin
  */
+
 public class HashUtil {
     public static String hashPassword(String password) {
         try {

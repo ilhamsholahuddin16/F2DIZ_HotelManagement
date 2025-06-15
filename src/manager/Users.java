@@ -4,6 +4,15 @@
  */
 package manager;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import config.DatabaseConnection;
+import java.sql.SQLException;
+import config.HashUtil;
+
 /**
  *
  * @author Ilham Sholahuddin
@@ -15,7 +24,57 @@ public class Users extends javax.swing.JFrame {
      */
     public Users() {
         initComponents();
+        tampilkanDataUser();
+        
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+        int row = jTable1.getSelectedRow(); // baris yang diklik
+        if (row != -1) {
+            String id_pegawai = jTable1.getValueAt(row, 1).toString();
+            jTextField1.setText(id_pegawai);
+            String username = jTable1.getValueAt(row, 2).toString();
+            jTextField3.setText(username);
+            String namapegawai = jTable1.getValueAt(row, 3).toString();
+            jTextField2.setText(namapegawai);
+            String akses = jTable1.getValueAt(row, 4).toString();
+            jComboBox1.setSelectedItem(akses);
+        }
+        jTextField1.setEditable(false);
+        jButton2.setEnabled(false);
     }
+});
+    }
+    
+private void tampilkanDataUser() {
+    try {
+        Connection conn = DatabaseConnection.connect();
+        String sql = "SELECT id_user, id_pegawai, username, nama_pegawai, akses FROM usersistem";
+
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("ID User");
+        model.addColumn("ID Pegawai");
+        model.addColumn("Username");
+        model.addColumn("Nama Pegawai");
+        model.addColumn("Akses");
+
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getInt("id_user"),
+                rs.getString("id_pegawai"),
+                rs.getString("username"),
+                rs.getString("nama_pegawai"),
+                rs.getString("akses")
+            });
+        }
+
+        jTable1.setModel(model);
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -43,6 +102,7 @@ public class Users extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jPasswordField1 = new javax.swing.JPasswordField();
+        jButton7 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -87,6 +147,11 @@ public class Users extends javax.swing.JFrame {
         jLabel3.setText("Nama Pegawai");
 
         jButton1.setText("Pilih");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(55, 71, 79));
@@ -109,12 +174,32 @@ public class Users extends javax.swing.JFrame {
         });
 
         jButton2.setText("Tambah");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Edit");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("Hapus");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
-        jPasswordField1.setText("jPasswordField1");
+        jButton7.setText("Reset");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -123,6 +208,17 @@ public class Users extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 6, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField2))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -135,18 +231,8 @@ public class Users extends javax.swing.JFrame {
                             .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jTextField3)
-                            .addComponent(jPasswordField1)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 6, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField2)))
+                            .addComponent(jPasswordField1)
+                            .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -176,10 +262,12 @@ public class Users extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
+                .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(159, Short.MAX_VALUE))
+                .addContainerGap(109, Short.MAX_VALUE))
         );
 
         jPanel3.setBackground(new java.awt.Color(167, 193, 168));
@@ -198,10 +286,15 @@ public class Users extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         jButton5.setText("Temukan");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jLabel7.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(55, 71, 79));
-        jLabel7.setText("Cari");
+        jLabel7.setText("Search");
 
         jButton6.setText("Kembali");
 
@@ -271,6 +364,249 @@ public class Users extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        String idpegawai = jTextField1.getText().trim();
+        String namapegawai = jTextField2.getText().trim();
+        String username = jTextField3.getText().trim();
+        String rawPassword = new String(jPasswordField1.getPassword()).trim();
+        String selectedRole = (String) jComboBox1.getSelectedItem();
+
+        // Validasi input: Username dan Password tidak boleh kosong 
+        if (username.isEmpty() || rawPassword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Username dan Password tidak boleh kosong.");
+        return; 
+        }
+
+        // Validasi input: Password minimal 6 karakter
+        if (rawPassword.length() < 6) {
+        JOptionPane.showMessageDialog(this, "Password minimal 6 karakter.");
+        return;
+        }
+
+        // Hash password untuk keamanan sebelum disimpan ke database
+        String password = HashUtil.hashPassword(rawPassword);
+
+        // Gunakan try-with-resources untuk memastikan koneksi dan statement ditutup secara otomatis
+        try (Connection conn = DatabaseConnection.connect()) {
+
+        try (PreparedStatement cekStmt = conn.prepareStatement("SELECT COUNT(*) FROM usersistem WHERE username = ?")) {
+        cekStmt.setString(1, username);
+        
+        try (ResultSet rs = cekStmt.executeQuery()) {
+            if (rs.next()) { 
+                if (rs.getInt(1) > 0) {
+                    JOptionPane.showMessageDialog(this, "Username sudah digunakan!");
+                    return;
+                }
+            }
+        }
+    }
+
+    String insertQuery = "INSERT INTO usersistem (id_pegawai, username, password, nama_pegawai, akses) VALUES (?, ?, ?, ?, ?)";
+    // Menggunakan try-with-resources untuk PreparedStatement stmt (untuk operasi insert)
+    try (PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
+        stmt.setString(1, idpegawai);
+        stmt.setString(2, username);
+        stmt.setString(3, password);
+        stmt.setString(4, namapegawai);
+        stmt.setString(5, selectedRole); 
+        stmt.executeUpdate();           
+
+        // Tampilkan pesan sukses
+        JOptionPane.showMessageDialog(this, "Data berhasil disimpan.");
+
+        jTextField1.setText("");
+        jPasswordField1.setText("");
+        if (jComboBox1 != null) {
+            jComboBox1.setSelectedIndex(-1);
+        }
+        tampilkanDataUser();
+        }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal menyimpan data atau terjadi kesalahan database: " + e.getMessage());
+        e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan umum: " + e.getMessage());
+            e.printStackTrace(); // Cetak stack trace untuk debugging
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String id = jTextField1.getText();
+
+        if (id.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Masukkan ID Pegawai terlebih dahulu.");
+            return;
+        }
+
+        try {
+            Connection conn = DatabaseConnection.connect();
+            String query = "SELECT nama_pegawai FROM pegawai WHERE id_pegawai = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, id);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String namaPegawai = rs.getString("nama_pegawai");
+                jTextField2.setText(namaPegawai);
+            } else {
+                jTextField2.setText(""); // kosongkan jika tidak ditemukan
+                JOptionPane.showMessageDialog(null, "Data tidak ditemukan.");
+            }
+
+            conn.close();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Terjadi kesalahan: " + ex.getMessage());
+        } 
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih baris yang ingin dihapus.");
+        return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+        "Yakin ingin menghapus user ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            int id_user = (int) jTable1.getValueAt(selectedRow, 0);
+
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement("DELETE FROM usersistem WHERE id_user = ?")) {
+
+            stmt.setInt(1, id_user);
+            stmt.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "User berhasil dihapus.");
+            tampilkanDataUser(); // refresh tabel
+            
+            jTextField1.setText("");
+            jTextField1.setEditable(true);
+            jTextField2.setText("");
+            jTextField3.setText("");
+            jPasswordField1.setText("");
+            jComboBox1.setSelectedIndex(-1);
+            jButton2.setEnabled(true);
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Gagal menghapus user: " + ex.getMessage());
+            ex.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        String keyword = jTextField5.getText().trim();
+
+        if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Masukkan username yang ingin dicari.");
+        return;
+        }
+
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"ID User","ID Pegawai", "Username", "Nama Pegawai", "Akses"}, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+            }
+        };
+        try (Connection conn = DatabaseConnection.connect();
+        PreparedStatement stmt = conn.prepareStatement(
+                 "SELECT id_user, id_pegawai, username, nama_pegawai, akses FROM usersistem WHERE username LIKE ?")) {
+
+        stmt.setString(1, "%" + keyword + "%");
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getInt("id_user"),
+                rs.getString("id_pegawai"),
+                rs.getString("username"),
+                rs.getString("nama_pegawai"),
+                rs.getString("akses")
+            });
+        }
+
+        jTable1.setModel(model);
+
+        if (model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "User tidak ditemukan.");
+        }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat mencari: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        String idpegawai = jTextField1.getText().trim();
+        String namapegawai = jTextField2.getText().trim();
+        String username = jTextField3.getText().trim();
+        String rawPassword = new String(jPasswordField1.getPassword()).trim();
+        String selectedRole = (String) jComboBox1.getSelectedItem();
+        String password = HashUtil.hashPassword(rawPassword);
+        
+        if (idpegawai.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tidak ada data yang dipilih untuk diubah!");
+            return; 
+        }
+        
+         if (namapegawai.isEmpty() || username.isEmpty() || rawPassword.isEmpty() || jComboBox1.getSelectedIndex() == -1) {
+         JOptionPane.showMessageDialog(this, "Semua field wajib diisi!");
+         return;
+        }
+        try (Connection conn = DatabaseConnection.connect()) {
+        String sql = "UPDATE usersistem SET username = ?, password = ?, nama_pegawai =?, akses = ? WHERE id_pegawai = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, username);
+        stmt.setString(2, password);
+        stmt.setString(3, namapegawai);
+        stmt.setString(4, selectedRole);
+        stmt.setString(5, idpegawai);
+
+        int updated = stmt.executeUpdate();
+        if (updated > 0) {
+        JOptionPane.showMessageDialog(this, "Data Barang berhasil diperbarui.");
+
+        // Reset form
+        jTextField1.setText("");
+        jTextField1.setEditable(true);
+        jTextField2.setText("");
+        jTextField3.setText("");
+        jPasswordField1.setText("");
+        jComboBox1.setSelectedIndex(-1);
+        jButton2.setEnabled(true);
+
+        // Refresh tabel
+        tampilkanDataUser();
+
+        } else {
+            JOptionPane.showMessageDialog(this, "Data tidak ditemukan atau tidak ada perubahan.");
+        }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal memperbarui: " + e.getMessage());
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // TODO add your handling code here:
+        jTextField1.setText("");
+        jTextField1.setEditable(true);
+        jTextField2.setText("");
+        jTextField3.setText("");
+        jPasswordField1.setText("");
+        jComboBox1.setSelectedIndex(-1);
+        jButton2.setEnabled(true);
+    }//GEN-LAST:event_jButton7ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -313,6 +649,7 @@ public class Users extends javax.swing.JFrame {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

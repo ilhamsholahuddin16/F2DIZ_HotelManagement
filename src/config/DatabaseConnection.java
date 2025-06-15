@@ -16,7 +16,7 @@ public class DatabaseConnection {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/", "root", ""); // Ubah sesuai
+                "jdbc:mysql://localhost:3306/hotel_db", "root", ""); // Ubah sesuai
             System.out.println("Koneksi berhasil");
         } catch (Exception e) {
             System.out.println("Koneksi gagal: " + e.getMessage());
