@@ -180,7 +180,18 @@ private void tampilkanDataPegawai() {
         jLabel11.setForeground(new java.awt.Color(55, 71, 79));
         jLabel11.setText("Cari Data");
 
+        jTextField6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField6ActionPerformed(evt);
+            }
+        });
+
         jButton4.setText("Temukan");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         jButton5.setText("Kembali");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
@@ -290,8 +301,9 @@ private void tampilkanDataPegawai() {
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Laki-Laki", "Perempuan" }));
         jComboBox1.setSelectedIndex(-1);
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Manager", "Receptionist", "HouseKeeper" }));
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Manager", "Receptionist", "Housekeeper", "Teknisi" }));
         jComboBox2.setSelectedIndex(-1);
+        jComboBox2.setToolTipText("");
 
         jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ya", "Tidak" }));
         jComboBox3.setSelectedIndex(-1);
@@ -581,7 +593,70 @@ private void tampilkanDataPegawai() {
         jComboBox1.setSelectedIndex(-1);
         jComboBox2.setSelectedIndex(-1);
         jComboBox3.setSelectedIndex(-1);
+        tampilkanDataPegawai();
     }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jTextField6ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        String keyword = jTextField6.getText().trim();
+
+        if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Masukkan kata kunci pencarian (nama, NIK, jabatan, dll).");
+        return;
+        }
+
+        DefaultTableModel model = new DefaultTableModel(new Object[]{
+            "ID Pegawai", "Nama Pegawai", "NIK", "Jenis Kelamin", "Alamat", "No. Telepon", "Email", "Jabatan", "Akses Sistem"
+        }, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+            }
+        };
+
+        String sql = "SELECT id_pegawai, nama_pegawai, nik, jenis_kelamin, alamat, no_tlp, email, jabatan, akses_sistem " +
+             "FROM pegawai " +
+             "WHERE nama_pegawai LIKE ? OR nik LIKE ? OR jabatan LIKE ? OR no_tlp LIKE ? OR email LIKE ?";
+
+        try (Connection conn = DatabaseConnection.connect();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        for (int i = 1; i <= 5; i++) {
+            stmt.setString(i, "%" + keyword + "%");
+        }
+
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getString("id_pegawai"),
+                rs.getString("nama_pegawai"),
+                rs.getString("nik"),
+                rs.getString("jenis_kelamin"),
+                rs.getString("alamat"),
+                rs.getString("no_tlp"),
+                rs.getString("email"),
+                rs.getString("jabatan"),
+                rs.getString("akses_sistem")
+            });
+        }
+
+        jTable1.setModel(model);
+
+        if (model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Tidak ditemukan pegawai yang cocok.");
+        }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat mencari: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments

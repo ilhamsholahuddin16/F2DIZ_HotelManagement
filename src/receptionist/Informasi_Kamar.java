@@ -288,8 +288,8 @@ private void tampilkanDataKamar() {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        String keyword = jTextField1.getText().trim(); // digunakan untuk nomor kamar atau tipe
-        String harga = jTextField2.getText().trim();   // digunakan untuk pencarian harga
+        String keyword = jTextField1.getText().trim();
+        String harga = jTextField2.getText().trim();
         String tipe = (String) jComboBox1.getSelectedItem();
         String status = (String) jComboBox2.getSelectedItem();
 

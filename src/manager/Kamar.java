@@ -199,17 +199,16 @@ private void tampilkanDataKamar() {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jComboBox2, 0, 273, Short.MAX_VALUE)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addComponent(jLabel7)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jTextField2))
-                        .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jTextField1)))
+                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jComboBox2, 0, 273, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField2))
+                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jTextField1))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -265,6 +264,11 @@ private void tampilkanDataKamar() {
         jLabel6.setText("Cari");
 
         jButton4.setText("Temukan");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -448,6 +452,49 @@ private void tampilkanDataKamar() {
             }
         }
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        String keyword = jTextField3.getText().trim();
+
+        if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Masukkan Nomor Kamar yang ingin dicari.");
+        return;
+        }
+
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"Nomor Kamar", "Tipe", "Harga", "Status"}, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+            }
+        };
+        try (Connection conn = DatabaseConnection.connect();
+        PreparedStatement stmt = conn.prepareStatement(
+                 "SELECT nomor_kamar, tipe, harga_kamar, status FROM kamar WHERE nomor_kamar LIKE ?")) {
+
+        stmt.setString(1, "%" + keyword + "%");
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            model.addRow(new Object[]{
+               rs.getString("nomor_kamar"),
+               rs.getString("tipe"),
+               rs.getString("harga_kamar"),
+               rs.getString("status")
+            });
+        }
+
+        jTable1.setModel(model);
+
+        if (model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Kamar tidak ditemukan.");
+        }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat mencari: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
