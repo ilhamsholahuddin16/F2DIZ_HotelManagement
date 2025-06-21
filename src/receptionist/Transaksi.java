@@ -653,8 +653,9 @@ public class Transaksi extends javax.swing.JFrame {
                 jComboBox1.setSelectedIndex(-1);
                 jComboBox2.setSelectedIndex(-1);
                 jDateChooser3.setDate(null);
-
+                tampilkanTransaksi();
             }
+            
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Total dan ID reservasi harus berupa angka.");
         } catch (SQLException e) {
