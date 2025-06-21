@@ -4,7 +4,15 @@
  */
 package receptionist;
 
-import manager.*;
+import config.DatabaseConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
+import java.util.ArrayList;
+
 
 /**
  *
@@ -17,7 +25,54 @@ public class Informasi_Kamar extends javax.swing.JFrame {
      */
     public Informasi_Kamar() {
         initComponents();
+        tampilkanDataKamar();
+        
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+        int row = jTable1.getSelectedRow(); // baris yang diklik
+        if (row != -1) {
+            String nomor_kamar = jTable1.getValueAt(row, 0).toString();
+            jTextField1.setText(nomor_kamar);
+            String tipe = jTable1.getValueAt(row, 1).toString();
+            jComboBox1.setSelectedItem(tipe);
+            String harga_kamar = jTable1.getValueAt(row, 2).toString();
+            jTextField2.setText(harga_kamar);
+            String status = jTable1.getValueAt(row, 3).toString();
+            jComboBox2.setSelectedItem(status);
+        }
     }
+});
+    }
+    
+private void tampilkanDataKamar() {
+    try {
+        Connection conn = DatabaseConnection.connect();
+        String sql = "SELECT nomor_kamar, tipe, harga_kamar, status FROM kamar";
+
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("No Kamar");
+        model.addColumn("Tipe");
+        model.addColumn("Harga Kamar");
+        model.addColumn("Status");
+
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getString("nomor_kamar"),
+                rs.getString("tipe"),
+                rs.getString("harga_kamar"),
+                rs.getString("status")
+            });
+        }
+
+        jTable1.setModel(model);
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+    }
+}
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -42,6 +97,7 @@ public class Informasi_Kamar extends javax.swing.JFrame {
         jComboBox2 = new javax.swing.JComboBox<>();
         jButton1 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -92,14 +148,28 @@ public class Informasi_Kamar extends javax.swing.JFrame {
         jLabel5.setText("Status");
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Standard", "Deluxe", "Suite" }));
+        jComboBox1.setSelectedIndex(-1);
 
         jLabel7.setText("Rp");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tersedia", "Terisi", "Cleaning", "Dalam Perbaikan", "Reserved" }));
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tersedia", "Ditempati", "Maintenance", "Reserved" }));
+        jComboBox2.setSelectedIndex(-1);
 
         jButton1.setText("Cari Kamar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Kembali");
+
+        jButton2.setText("Reset");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -114,15 +184,17 @@ public class Informasi_Kamar extends javax.swing.JFrame {
                     .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jComboBox2, 0, 273, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField2))
-                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextField1))
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jComboBox2, 0, 273, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addComponent(jLabel7)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jTextField2))
+                        .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jTextField1)))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -149,6 +221,8 @@ public class Informasi_Kamar extends javax.swing.JFrame {
                         .addComponent(jTextField2)))
                 .addGap(18, 18, 18)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -212,6 +286,82 @@ public class Informasi_Kamar extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String keyword = jTextField1.getText().trim(); // digunakan untuk nomor kamar atau tipe
+        String harga = jTextField2.getText().trim();   // digunakan untuk pencarian harga
+        String tipe = (String) jComboBox1.getSelectedItem();
+        String status = (String) jComboBox2.getSelectedItem();
+
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"Nomor Kamar", "Tipe", "Harga", "Status"}, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+        return false;
+        }
+    };
+
+    StringBuilder query = new StringBuilder("SELECT nomor_kamar, tipe, harga_kamar, status FROM kamar WHERE 1=1 ");
+    List<String> parameters = new ArrayList<>();
+
+        if (!keyword.isEmpty()) {
+        query.append("AND (nomor_kamar LIKE ? OR tipe LIKE ?) ");
+        parameters.add("%" + keyword + "%");
+        parameters.add("%" + keyword + "%");
+       }
+        if (!harga.isEmpty()) {
+        query.append("AND harga_kamar LIKE ? ");
+        parameters.add("%" + harga + "%");
+       }
+        if (tipe != null && !tipe.equalsIgnoreCase("Semua")) {
+        query.append("AND tipe = ? ");
+        parameters.add(tipe);
+       }
+        if (status != null && !status.equalsIgnoreCase("Semua")) {
+        query.append("AND status = ? ");
+        parameters.add(status);
+       }
+
+     try (Connection conn = DatabaseConnection.connect();
+     PreparedStatement stmt = conn.prepareStatement(query.toString())) {
+
+    // Set parameter satu per satu
+    for (int i = 0; i < parameters.size(); i++) {
+        stmt.setString(i + 1, parameters.get(i));
+    }
+
+    ResultSet rs = stmt.executeQuery();
+    while (rs.next()) {
+        model.addRow(new Object[]{
+            rs.getString("nomor_kamar"),
+            rs.getString("tipe"),
+            rs.getString("harga_kamar"),
+            rs.getString("status")
+        });
+    }
+
+    jTable1.setModel(model);
+
+      if (model.getRowCount() == 0) {
+        JOptionPane.showMessageDialog(this, "Kamar tidak ditemukan.");
+    }
+
+    } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat mencari: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        jTextField1.setText("");
+        jTextField1.setEnabled(true);
+        jButton1.setEnabled(true);
+        jTextField2.setText("");
+        jComboBox1.setSelectedIndex(-1);
+        jComboBox2.setSelectedIndex(-1);
+        tampilkanDataKamar();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -250,6 +400,7 @@ public class Informasi_Kamar extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
